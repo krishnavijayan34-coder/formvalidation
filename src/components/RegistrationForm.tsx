@@ -47,7 +47,7 @@ export default function RegisterForm() {
       "confirmPassword",
     ]);
 
-    // Email validation
+    
     if (!validateEmail(form.email)) {
       validationErrors.push("Invalid email format");
     }
@@ -55,8 +55,7 @@ export default function RegisterForm() {
     
     if (!validatePassword(form.password)) {
       validationErrors.push(
-        "Password must be at least 6 characters"
-      );
+     "Password must contain letters, numbers and minimum 6 characters"      );
     }
 
     
