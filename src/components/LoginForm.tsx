@@ -37,6 +37,8 @@ if (validationErrors.length > 0) {
   setErrors(validationErrors);
   return;
 }
+   setErrors([]);
+   alert("Login successful");
   };
 
   return (
