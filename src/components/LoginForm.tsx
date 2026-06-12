@@ -1,49 +1,64 @@
-import  { useState } from "react";
-import { validateFields,validateEmail,validatePassword } from "../utils/validation";
-import  TextField  from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+import { useActionState } from "react";
+
+import {
+  validateFields,
+  validateEmail,
+  validatePassword,
+} from "../utils/validation";
+
+import TextField from "@mui/material/TextField";
+
 import Box from "@mui/material/Box";
-type LoginData={
-    email:string;
-    password:string;
+import SubmitButton from "./submitButton";
+type LoginData = {
+  email: string;
+  password: string;
 };
-export default function LoginForm(){
-    const[form,setForm]=useState<LoginData>({email:"",password:"",});
-    const[errors,setErrors]=useState<string[]>([]);
-    const handleChange=(e:React.ChangeEvent<HTMLInputElement>)=>{
-        setForm({...form,[e.target.name]:e.target.value,});
-    };
-    const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
 
-    const validationErrors = validateFields(form, [
-      "email",
-      "password",
-    ]);
+async function loginAction(
+  _previousState: string[],
+  formData: FormData
+) {
 
-
-if (!validateEmail(form.email)) {
-  validationErrors.push("Invalid email format");
-}
-
-
-if (!validatePassword(form.password)) {
-  validationErrors.push(
-   "Password must contain letters, numbers and minimum 6 characters"  );
-}
-
-if (validationErrors.length > 0) {
-  setErrors(validationErrors);
-  return;
-}
-   setErrors([]);
-   alert("Login successful");
+  await new Promise((resolve)=> setTimeout(resolve,3000));
+  
+  const form: LoginData = {
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
   };
+
+  const validationErrors = validateFields(form, [
+    "email",
+    "password",
+  ]);
+
+  if (!validateEmail(form.email)) {
+    validationErrors.push("Invalid email format");
+  }
+
+  if (!validatePassword(form.password)) {
+    validationErrors.push(
+      "Password must contain letters, numbers and minimum 6 characters"
+    );
+  }
+
+  if (validationErrors.length > 0) {
+    return validationErrors;
+  }
+
+  alert("Login successful");
+
+  return [];
+}
+
+export default function LoginForm() {
+  const [errors, formAction] =
+    useActionState(loginAction, []);
 
   return (
     <Box
       component="form"
-      onSubmit={handleSubmit}
+      action={formAction}
       sx={{ width: 300, margin: "auto", mt: 5 }}
     >
       <h2>Login Form</h2>
@@ -53,8 +68,6 @@ if (validationErrors.length > 0) {
         margin="normal"
         label="Email"
         name="email"
-        value={form.email}
-        onChange={handleChange}
       />
 
       <TextField
@@ -63,13 +76,9 @@ if (validationErrors.length > 0) {
         label="Password"
         type="password"
         name="password"
-        value={form.password}
-        onChange={handleChange}
       />
 
-      <Button variant="contained" type="submit" fullWidth>
-        Login
-      </Button>
+      <SubmitButton/>
 
       {errors.length > 0 && (
         <Box sx={{ color: "red", mt: 2 }}>
@@ -81,4 +90,3 @@ if (validationErrors.length > 0) {
     </Box>
   );
 }
-export {};

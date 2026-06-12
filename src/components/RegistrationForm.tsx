@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useActionState } from "react";
 
 import {
   validateFields,
@@ -6,8 +6,9 @@ import {
   validatePassword,
 } from "../utils/validation";
 
+import SubmitButton from "./submitButton";
 import TextField from "@mui/material/TextField";
-import Button from "@mui/material/Button";
+
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 
@@ -18,64 +19,62 @@ type RegisterData = {
   confirmPassword: string;
 };
 
+async function registerAction(
+  _previousState: string[],
+  formData: FormData
+) {
+
+   await new Promise((resolve)=>setTimeout(resolve,3000));
+
+  const form: RegisterData = {
+    name: formData.get("name") as string,
+    email: formData.get("email") as string,
+    password: formData.get("password") as string,
+    confirmPassword: formData.get("confirmPassword") as string,
+  };
+
+  const validationErrors = validateFields(form, [
+    "name",
+    "email",
+    "password",
+    "confirmPassword",
+  ]);
+
+  if (!validateEmail(form.email)) {
+    validationErrors.push("Invalid email format");
+  }
+
+  if (!validatePassword(form.password)) {
+    validationErrors.push(
+      "Password must contain letters, numbers and minimum 6 characters"
+    );
+  }
+
+  if (form.password !== form.confirmPassword) {
+    validationErrors.push("Passwords do not match");
+  }
+
+  if (validationErrors.length > 0) {
+    return validationErrors;
+  }
+
+  console.log("Registration Data:", form);
+
+  alert("Registration successful");
+
+  return [];
+}
+
 export default function RegisterForm() {
-  const [form, setForm] = useState<RegisterData>({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-  });
-
-  const [errors, setErrors] = useState<string[]>([]);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    const validationErrors = validateFields(form, [
-      "name",
-      "email",
-      "password",
-      "confirmPassword",
-    ]);
-
-    
-    if (!validateEmail(form.email)) {
-      validationErrors.push("Invalid email format");
-    }
-
-    
-    if (!validatePassword(form.password)) {
-      validationErrors.push(
-     "Password must contain letters, numbers and minimum 6 characters"      );
-    }
-
-    
-    if (form.password !== form.confirmPassword) {
-      validationErrors.push("Passwords do not match");
-    }
-
-    if (validationErrors.length > 0) {
-      setErrors(validationErrors);
-      return;
-    }
-
-    setErrors([]);
-    alert("Registration successful");
-  };
+  const [errors, formAction] = useActionState(
+    registerAction,
+    []
+  );
 
   return (
     <Box
       component="form"
-      onSubmit={handleSubmit}
+      action={formAction}
       sx={{ width: 320, margin: "auto", mt: 5 }}
     >
       <Typography variant="h5" gutterBottom>
@@ -87,8 +86,6 @@ export default function RegisterForm() {
         margin="normal"
         label="Name"
         name="name"
-        value={form.name}
-        onChange={handleChange}
       />
 
       <TextField
@@ -96,8 +93,6 @@ export default function RegisterForm() {
         margin="normal"
         label="Email"
         name="email"
-        value={form.email}
-        onChange={handleChange}
       />
 
       <TextField
@@ -106,8 +101,6 @@ export default function RegisterForm() {
         label="Password"
         type="password"
         name="password"
-        value={form.password}
-        onChange={handleChange}
       />
 
       <TextField
@@ -116,18 +109,11 @@ export default function RegisterForm() {
         label="Confirm Password"
         type="password"
         name="confirmPassword"
-        value={form.confirmPassword}
-        onChange={handleChange}
       />
 
-      <Button
-        variant="contained"
-        type="submit"
-        fullWidth
-        sx={{ mt: 2 }}
-      >
-        Register
-      </Button>
+      <Box sx={{ mt:2}}>
+        <SubmitButton />
+      </Box>
 
       {errors.length > 0 && (
         <Box sx={{ color: "red", mt: 2 }}>
