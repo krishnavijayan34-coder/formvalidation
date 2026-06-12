@@ -1,5 +1,6 @@
 import LoginForm from "./components/LoginForm";
 import RegisterForm from "./components/RegistrationForm";
+import { Suspense } from "react";
 import UserProfile from "./components/Userprofile";
 
 import Container from "@mui/material/Container";
@@ -35,7 +36,9 @@ export default function App() {
         <Grid size={{ xs: 12 }}>
           <Card>
             <CardContent>
-              <UserProfile />
+             <Suspense fallback={<h2>Loading User...</h2>}>
+             <UserProfile />
+             </Suspense>
             </CardContent>
           </Card>
         </Grid>

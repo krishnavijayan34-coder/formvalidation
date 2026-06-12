@@ -1,13 +1,18 @@
-import  type { User } from "../types/user";
-export function getUser():Promise<User>{
-    return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve({
-        id: 1,
-        name: "Krishna",
-        email: "krishna@gmail.com",
-        isAdmin: true,
-      });
-    }, 1000);
+import type { User } from "../types/user";
+
+const userPromise: Promise<User> = new Promise((resolve) => {
+  setTimeout(() => {
+    console.log("DATA RETURNED");
+
+    resolve({
+      id: 1,
+      name: "Krishna",
+      email: "krishna@gmail.com",
+      isAdmin: true,
+    });
+  }, 5000);
 });
+
+export function getUser() {
+  return userPromise;
 }

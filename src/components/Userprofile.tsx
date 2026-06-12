@@ -1,32 +1,15 @@
-import { useEffect, useState } from "react";
-
+//import { useEffect, useState } from "react";
+import { use } from "react";
 import { getUser } from "../utils/api";
 import { pickFields } from "../utils/helpers";
-
-import type { User } from "../types/user";
 
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 
 export default function UserProfile() {
-  const [user, setUser] = useState<User | null>(null);
+  const user=use(getUser());
 
-  const [filteredUser, setFilteredUser] =
-    useState<object | null>(null);
-
-  useEffect(() => {
-    getUser().then((data) => {
-      setUser(data);
-
-      // Select only required fields
-      const selectedFields = pickFields(data, [
-        "name",
-        "email",
-      ]);
-
-      setFilteredUser(selectedFields);
-    });
-  }, []);
+  const filteredUser = pickFields(user,["name","email",]);
 
   return (
     <Box>
